@@ -9,11 +9,14 @@ const PWD_KEY = 'berber_admin_pwd';
 
 // --- DEFAULT SETTINGS ---
 export const getDefaultSettings = () => ({
+  shopName: 'Bizim Berber',
+  shopLogo: '',
   startTime: '08:00',
   endTime: '20:00',
   interval: 15,
   closedDays: [0],
   holidays: [],
+  dateOverrides: {}, // { '2026-04-15': { startTime: '10:00', endTime: '18:00' }, ... }
   barbers: [{ id: 'default', name: 'Berber', color: '#D4AF37', active: true }],
   prices: {
     "Saç Kesimi":         { price: 300, duration: 30 },
@@ -32,6 +35,9 @@ export const getSettings = () => {
     if (!s.holidays) s.holidays = [];
     if (!s.barbers || !s.barbers.length)
       s.barbers = [{ id: 'default', name: 'Berber', color: '#D4AF37', active: true }];
+    if (!s.shopName) s.shopName = 'Bizim Berber';
+    if (s.shopLogo === undefined) s.shopLogo = '';
+    if (!s.dateOverrides) s.dateOverrides = {};
     // Migrate: price number → {price, duration}
     if (s.prices) {
       Object.keys(s.prices).forEach(k => {
@@ -133,9 +139,10 @@ const minutesToTime = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${S
 
 export const generateDynamicSlots = (dateStr, barberId, settings) => {
   if (isClosedDay(dateStr, settings)) return [];
+  const override = settings.dateOverrides?.[dateStr];
+  const startMins = timeToMinutes(override?.startTime || settings.startTime);
+  const endMins = timeToMinutes(override?.endTime || settings.endTime);
   const slots = [];
-  const startMins = timeToMinutes(settings.startTime);
-  const endMins = timeToMinutes(settings.endTime);
   for (let cur = startMins; cur < endMins; cur += settings.interval) {
     const time = minutesToTime(cur);
     slots.push({
@@ -151,6 +158,7 @@ export const generateDynamicSlots = (dateStr, barberId, settings) => {
 
 // --- CORE: GET DATE DATA (multi-barber dict) ---
 // Returns { barberId: [slots], ... }
+// Always generates fresh slots based on current settings, then merges existing data
 const getDateData = (dateStr) => {
   const settings = getSettings();
   if (isClosedDay(dateStr, settings)) return {};
@@ -162,12 +170,25 @@ const getDateData = (dateStr) => {
 
   for (const barber of activeBarbers) {
     const bid = barber.id;
+    // Always generate fresh slots based on current settings
+    const freshSlots = generateDynamicSlots(dateStr, bid, settings);
+
     if (dd[bid] && Array.isArray(dd[bid])) {
-      const slots = dd[bid].map(migrateSlot);
-      const hasReal = slots.some(s => s.status === 'booked' || s.status === 'pending' || s.manualCampaign);
-      result[bid] = hasReal ? slots : generateDynamicSlots(dateStr, bid, settings);
+      const oldSlots = dd[bid].map(migrateSlot);
+      // Build a lookup from old slots by time
+      const oldByTime = {};
+      oldSlots.forEach(s => { oldByTime[s.time] = s; });
+
+      // Merge: for each fresh slot, use old data if it has real content
+      result[bid] = freshSlots.map(fresh => {
+        const old = oldByTime[fresh.time];
+        if (old && (old.status === 'booked' || old.status === 'pending' || old.status === 'blocked' || old.manualCampaign)) {
+          return { ...old, id: fresh.id, barberId: bid };
+        }
+        return fresh;
+      });
     } else {
-      result[bid] = generateDynamicSlots(dateStr, bid, settings);
+      result[bid] = freshSlots;
     }
   }
 

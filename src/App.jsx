@@ -85,8 +85,12 @@ const App = () => {
       {/* Topbar */}
       <header className="topbar glass-panel">
         <div className="topbar-brand">
-          <span className="brand-icon">💈</span>
-          <span className="brand-name">Bizim <strong>Berber</strong></span>
+          {settings.shopLogo ? (
+            <img src={settings.shopLogo} alt="Logo" className="brand-logo" />
+          ) : (
+            <span className="brand-icon">💈</span>
+          )}
+          <span className="brand-name">{settings.shopName || 'Bizim Berber'}</span>
         </div>
         <nav className="topbar-nav">
           <button className="topbar-query-btn" onClick={() => setShowQuery(true)}>

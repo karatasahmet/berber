@@ -30,6 +30,36 @@ const AdminSettings = () => {
     setToast({ message: 'Tüm ayarlar başarıyla kaydedildi!', type: 'success' });
   };
 
+  // Date-specific override hours
+  const [overrideDate, setOverrideDate] = useState('');
+  const [overrideStart, setOverrideStart] = useState('08:00');
+  const [overrideEnd, setOverrideEnd] = useState('20:00');
+
+  const addOverride = () => {
+    if (!overrideDate || !overrideStart || !overrideEnd) return;
+    if (overrideStart >= overrideEnd) {
+      setToast({ message: 'Açılış saati kapanıştan önce olmalı!', type: 'error' });
+      return;
+    }
+    setSettings(prev => ({
+      ...prev,
+      dateOverrides: {
+        ...prev.dateOverrides,
+        [overrideDate]: { startTime: overrideStart, endTime: overrideEnd }
+      }
+    }));
+    setToast({ message: `${overrideDate} için özel saatler tanımlandı.`, type: 'success' });
+    setOverrideDate('');
+  };
+
+  const removeOverride = (date) => {
+    setSettings(prev => {
+      const copy = { ...prev.dateOverrides };
+      delete copy[date];
+      return { ...prev, dateOverrides: copy };
+    });
+  };
+
   const updateSetting = (key, value) => setSettings(prev => ({ ...prev, [key]: value }));
 
   const toggleClosedDay = (day) => {
@@ -132,9 +162,37 @@ const AdminSettings = () => {
   return (
     <div className="admin-settings animate-slide-up">
 
-      {/* Working Hours */}
+      {/* Shop Info */}
       <div className="settings-section glass-panel">
-        <h3 className="settings-section-title">🕐 Çalışma Saatleri</h3>
+        <h3 className="settings-section-title">🏪 Dükkan Bilgileri</h3>
+        <div className="settings-row">
+          <div className="settings-field" style={{ flex: 2 }}>
+            <label>Dükkan Adı</label>
+            <input type="text" className="custom-input" value={settings.shopName || ''}
+              onChange={e => updateSetting('shopName', e.target.value)}
+              placeholder="Berber dükkanı adı" />
+          </div>
+          <div className="settings-field" style={{ flex: 2 }}>
+            <label>Logo URL <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(opsiyonel)</span></label>
+            <input type="text" className="custom-input" value={settings.shopLogo || ''}
+              onChange={e => updateSetting('shopLogo', e.target.value)}
+              placeholder="https://... veya boş bırakın" />
+          </div>
+          {settings.shopLogo && (
+            <div className="settings-field" style={{ alignItems: 'center' }}>
+              <label>Önizleme</label>
+              <img src={settings.shopLogo} alt="Logo" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-gold)' }} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Working Hours — General */}
+      <div className="settings-section glass-panel">
+        <h3 className="settings-section-title">🕐 Çalışma Saatleri — <span style={{ color: 'var(--accent-gold)' }}>Genel</span></h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '1rem' }}>
+          Tüm günler için varsayılan çalışma saatleri. Belirli bir gün için özel saatler tanımlamak isterseniz aşağıdaki "Özel Gün Saatleri" bölümünü kullanın.
+        </p>
         <div className="settings-row">
           <div className="settings-field">
             <label>Açılış Saati</label>
@@ -147,7 +205,7 @@ const AdminSettings = () => {
               onChange={e => updateSetting('endTime', e.target.value)} />
           </div>
           <div className="settings-field">
-            <label>Aralık (dk) — baz granularite</label>
+            <label>Aralık (dk)</label>
             <select className="custom-input" value={settings.interval}
               onChange={e => updateSetting('interval', Number(e.target.value))}>
               <option value={15}>15 dakika</option>
@@ -166,6 +224,47 @@ const AdminSettings = () => {
                 onClick={() => toggleClosedDay(i)}>{day}</button>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Date-Specific Override Hours */}
+      <div className="settings-section glass-panel">
+        <h3 className="settings-section-title">🕐 Çalışma Saatleri — <span style={{ color: '#22c55e' }}>Özel Gün</span></h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '1rem' }}>
+          Belirli bir tarih için farklı açılış/kapanış saati belirleyin. Sadece seçilen gün için geçerli olur.
+        </p>
+        <div className="settings-row" style={{ alignItems: 'flex-end' }}>
+          <div className="settings-field">
+            <label>Tarih</label>
+            <input type="date" className="custom-input" value={overrideDate}
+              onChange={e => setOverrideDate(e.target.value)} />
+          </div>
+          <div className="settings-field">
+            <label>Açılış</label>
+            <input type="time" className="custom-input" value={overrideStart}
+              onChange={e => setOverrideStart(e.target.value)} />
+          </div>
+          <div className="settings-field">
+            <label>Kapanış</label>
+            <input type="time" className="custom-input" value={overrideEnd}
+              onChange={e => setOverrideEnd(e.target.value)} />
+          </div>
+          <button className="btn-gold" onClick={addOverride}>+ Özel Gün Ekle</button>
+        </div>
+        {Object.keys(settings.dateOverrides || {}).length === 0 && (
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.75rem', fontSize: '0.85rem' }}>Henüz özel gün saati tanımlanmadı.</p>
+        )}
+        <div className="holiday-list" style={{ marginTop: '0.75rem' }}>
+          {Object.entries(settings.dateOverrides || {}).sort((a, b) => a[0].localeCompare(b[0])).map(([date, ov]) => (
+            <div key={date} className="holiday-chip">
+              <span>
+                📅 {new Date(date + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {' — '}
+                <strong style={{ color: 'var(--accent-gold)' }}>{ov.startTime} - {ov.endTime}</strong>
+              </span>
+              <button onClick={() => removeOverride(date)}>✕</button>
+            </div>
+          ))}
         </div>
       </div>
 
