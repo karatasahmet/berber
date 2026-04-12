@@ -195,23 +195,30 @@ export const getAllTimeSlotsForDate = (dateStr) => {
   if (isClosedDay(dateStr, settings)) return [];
   const dd = getDateData(dateStr);
 
-  // Her saat için: müsait var mı, bekleyen var mı?
+  // Her saat için: müsait var mı, bekleyen var mı, kampanya var mı?
   const timeMap = {};
 
   Object.entries(dd).forEach(([bid, slots]) => {
     if (!Array.isArray(slots)) return;
     slots.filter(s => !s.blockedBy).forEach(s => {
-      if (!timeMap[s.time]) timeMap[s.time] = { hasAvailable: false, hasPending: false };
-      if (s.status === 'available') timeMap[s.time].hasAvailable = true;
-      if (s.status === 'pending')   timeMap[s.time].hasPending  = true;
+      if (!timeMap[s.time]) timeMap[s.time] = { hasAvailable: false, hasPending: false, campaign: null };
+      if (s.status === 'available') {
+        timeMap[s.time].hasAvailable = true;
+        // Eğer bu slot'ta admin tanımlı kampanya varsa, müşteriye göster
+        if (s.manualCampaign && !timeMap[s.time].campaign) {
+          timeMap[s.time].campaign = s.manualCampaign.rate;
+        }
+      }
+      if (s.status === 'pending') timeMap[s.time].hasPending = true;
     });
   });
 
   return Object.entries(timeMap)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([time, { hasAvailable, hasPending }]) => ({
+    .map(([time, { hasAvailable, hasPending, campaign }]) => ({
       time,
       status: hasAvailable ? 'available' : hasPending ? 'pending' : 'full',
+      campaign, // admin tanımlı indirim bilgisi
     }));
 };
 
@@ -433,11 +440,8 @@ export const setManualCampaign = (dateStr, barberId, slotId, rate) => {
 export const getActiveCampaigns = (slots) => {
   const campaigns = {};
   slots.forEach(slot => {
-    if (slot.manualCampaign && slot.status !== 'booked') {
+    if (slot.manualCampaign) {
       campaigns[slot.id] = slot.manualCampaign.rate;
-    } else if (slot.status === 'available') {
-      const hour = parseInt(slot.time.split(':')[0], 10);
-      if (hour >= 11 && hour <= 15) campaigns[slot.id] = '%20 İndirim Fırsatı!';
     }
   });
   return campaigns;

@@ -140,12 +140,11 @@ const App = () => {
 
           {!isClosed && allSlots.length > 0 && (
             <div className="slots-grid">
-              {allSlots.map(({ time, status }) => {
-                const hour = parseInt(time.split(':')[0], 10);
+              {allSlots.map(({ time, status, campaign }) => {
                 const isAvailable = status === 'available';
                 const isPending   = status === 'pending';
                 const isFull      = status === 'full';
-                const isCampaign  = isAvailable && hour >= 11 && hour <= 15;
+                const isCampaign  = isAvailable && !!campaign;
                 const isClickable = isAvailable; // Bekliyor ve dolu tıklanamaz
                 return (
                   <div
@@ -161,7 +160,7 @@ const App = () => {
                     title={
                       isFull    ? 'Dolu' :
                       isPending ? 'Onay Bekleniyor' :
-                      isCampaign ? '%20 İndirim Fırsatı!' :
+                      isCampaign ? campaign :
                       'Müsait - Tıkla'
                     }
                   >
@@ -169,7 +168,7 @@ const App = () => {
                     <span className="slot-tile-status">
                       {isFull    ? 'Dolu'      :
                        isPending ? 'Bekliyor'  :
-                       isCampaign ? '% İndirim' :
+                       isCampaign ? campaign :
                        'Müsait'}
                     </span>
                   </div>
