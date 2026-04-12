@@ -118,7 +118,7 @@ const clearFutureUnbookedSlots = () => {
     if (dateStr < today) { cleaned[dateStr] = dateData; return; }
     let hasReal = false;
     Object.values(dateData).forEach(slots => {
-      if (Array.isArray(slots) && slots.some(s => s.status === 'booked' || s.status === 'pending')) {
+      if (Array.isArray(slots) && slots.some(s => s.status === 'booked' || s.status === 'pending' || s.manualCampaign)) {
         hasReal = true;
       }
     });
@@ -164,7 +164,7 @@ const getDateData = (dateStr) => {
     const bid = barber.id;
     if (dd[bid] && Array.isArray(dd[bid])) {
       const slots = dd[bid].map(migrateSlot);
-      const hasReal = slots.some(s => s.status === 'booked' || s.status === 'pending');
+      const hasReal = slots.some(s => s.status === 'booked' || s.status === 'pending' || s.manualCampaign);
       result[bid] = hasReal ? slots : generateDynamicSlots(dateStr, bid, settings);
     } else {
       result[bid] = generateDynamicSlots(dateStr, bid, settings);
