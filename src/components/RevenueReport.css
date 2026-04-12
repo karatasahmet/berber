@@ -189,3 +189,34 @@
   color: var(--text-muted);
   vertical-align: middle;
 }
+
+/* Detail sub-table */
+.report-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(212, 175, 55, 0.03);
+  border-left: 3px solid var(--accent-gold);
+}
+
+.report-detail-table th {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-thin);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.report-detail-table td {
+  padding: 0.55rem 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.report-detail-table .gold-text {
+  color: var(--accent-gold);
+  font-weight: 600;
+}

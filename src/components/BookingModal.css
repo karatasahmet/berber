@@ -458,6 +458,23 @@
   font-weight: 800;
 }
 
+/* Hot deal price summary */
+.bm-price-hot {
+  border-color: rgba(239, 68, 68, 0.4);
+  animation: hotPricePulse 2s ease-in-out infinite;
+}
+
+.bm-total-hot {
+  color: #ef4444 !important;
+  font-size: 1.4rem !important;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes hotPricePulse {
+  0%, 100% { border-color: rgba(239, 68, 68, 0.3); box-shadow: none; }
+  50% { border-color: rgba(239, 68, 68, 0.6); box-shadow: 0 0 12px rgba(239, 68, 68, 0.15); }
+}
+
 /* Confirm button */
 .confirm-btn {
   width: 100%;

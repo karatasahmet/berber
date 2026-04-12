@@ -211,24 +211,51 @@ const BookingModal = ({ slot, dateStr, onConfirm, onClose }) => {
             </div>
 
             {/* Price Summary */}
-            <div className="bm-price-summary">
-              <div className="bm-price-row">
-                <span>💈 {selectedService}</span>
-                <span>{svcDuration} dk</span>
-              </div>
-              <div className="bm-price-row">
-                <span style={{ color: selectedBarber?.color ?? 'var(--accent-gold)' }}>
-                  <span className="bm-barber-dot" style={{ background: selectedBarber?.color }} />
-                  {selectedBarber?.name}
-                </span>
-                <span>{slot.time}</span>
-              </div>
-              <div className="bm-price-divider" />
-              <div className="bm-price-row bm-price-total">
-                <span>💰 Ödenecek Tutar</span>
-                <span className="bm-total-amount">{svcPrice.toLocaleString('tr-TR')} ₺</span>
-              </div>
-            </div>
+            {(() => {
+              // Calculate discount
+              let discountRate = 0;
+              if (selectedBarber?.campaign) {
+                const m = selectedBarber.campaign.match(/(\d+)/);
+                if (m) discountRate = parseInt(m[1]);
+              }
+              const discountAmount = svcPrice * discountRate / 100;
+              const finalPrice = svcPrice - discountAmount;
+              const isHotDeal = discountRate >= 50;
+
+              return (
+                <div className={`bm-price-summary ${isHotDeal ? 'bm-price-hot' : ''}`}>
+                  <div className="bm-price-row">
+                    <span>💈 {selectedService}</span>
+                    <span>{svcDuration} dk</span>
+                  </div>
+                  <div className="bm-price-row">
+                    <span style={{ color: selectedBarber?.color ?? 'var(--accent-gold)' }}>
+                      <span className="bm-barber-dot" style={{ background: selectedBarber?.color }} />
+                      {selectedBarber?.name}
+                    </span>
+                    <span>{slot.time}</span>
+                  </div>
+                  {discountRate > 0 && (
+                    <>
+                      <div className="bm-price-divider" />
+                      <div className="bm-price-row">
+                        <span>Fiyat</span>
+                        <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)' }}>{svcPrice.toLocaleString('tr-TR')} ₺</span>
+                      </div>
+                      <div className="bm-price-row" style={{ color: isHotDeal ? '#ef4444' : 'var(--accent-gold)' }}>
+                        <span>🏷️ İndirim (%{discountRate})</span>
+                        <span style={{ fontWeight: 700 }}>-{discountAmount.toLocaleString('tr-TR')} ₺</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="bm-price-divider" />
+                  <div className="bm-price-row bm-price-total">
+                    <span>💰 Ödenecek Tutar</span>
+                    <span className={`bm-total-amount ${isHotDeal ? 'bm-total-hot' : ''}`}>{finalPrice.toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             <button type="submit" className="confirm-btn">RANDEVUYU ONAYLA</button>
           </form>

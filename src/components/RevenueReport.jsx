@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { getRevenueForRange } from '../utils/bookingStore';
+import { getRevenueForRange, getSettings } from '../utils/bookingStore';
 import './RevenueReport.css';
 
 const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -16,6 +16,8 @@ const firstOfMonth = today.slice(0, 7) + '-01';
 const RevenueReport = () => {
   const [startDate, setStartDate] = useState(firstOfMonth);
   const [endDate, setEndDate] = useState(today);
+  const [expandedService, setExpandedService] = useState(null);
+  const settings = getSettings();
 
   const report = useMemo(() => {
     if (startDate && endDate && startDate <= endDate) {
@@ -143,29 +145,86 @@ const RevenueReport = () => {
                   <th>Randevu Sayısı</th>
                   <th>Toplam Kazanç</th>
                   <th>Pay</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(report.byService)
                   .sort((a, b) => b[1].revenue - a[1].revenue)
-                  .map(([svc, data]) => (
-                    <tr key={svc}>
-                      <td>{svc}</td>
-                      <td>{data.count}</td>
-                      <td className="gold-text">{data.revenue.toLocaleString('tr-TR')} ₺</td>
-                      <td>
-                        <div className="mini-bar-wrapper">
-                          <div
-                            className="mini-bar"
-                            style={{ width: `${Math.round((data.revenue / report.totalRevenue) * 100)}%` }}
-                          ></div>
-                        </div>
-                        <span className="mini-pct">
-                          {Math.round((data.revenue / report.totalRevenue) * 100)}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  .map(([svc, data]) => {
+                    const isExpanded = expandedService === svc;
+                    const svcDetails = report.detailRows.filter(r => r.service === svc);
+                    return (
+                      <React.Fragment key={svc}>
+                        <tr>
+                          <td>{svc}</td>
+                          <td>{data.count}</td>
+                          <td className="gold-text">{data.revenue.toLocaleString('tr-TR')} ₺</td>
+                          <td>
+                            <div className="mini-bar-wrapper">
+                              <div
+                                className="mini-bar"
+                                style={{ width: `${Math.round((data.revenue / report.totalRevenue) * 100)}%` }}
+                              ></div>
+                            </div>
+                            <span className="mini-pct">
+                              {Math.round((data.revenue / report.totalRevenue) * 100)}%
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              className="detail-toggle-btn"
+                              onClick={() => setExpandedService(isExpanded ? null : svc)}
+                              title="Detay"
+                            >
+                              {isExpanded ? '▾' : '▸'} Detay
+                            </button>
+                          </td>
+                        </tr>
+                        {isExpanded && svcDetails.length > 0 && (
+                          <tr className="detail-row">
+                            <td colSpan="5" style={{ padding: 0 }}>
+                              <table className="report-detail-table">
+                                <thead>
+                                  <tr>
+                                    <th>Tarih</th>
+                                    <th>Saat</th>
+                                    <th>Müşteri</th>
+                                    <th>Berber</th>
+                                    <th>İndirim</th>
+                                    <th>Ücret</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {svcDetails.map((row, idx) => {
+                                    const barber = settings.barbers?.find(b => b.id === row.barberId);
+                                    return (
+                                      <tr key={idx}>
+                                        <td>{formatDate(row.dateStr)}</td>
+                                        <td style={{ fontWeight: 600 }}>{row.time}</td>
+                                        <td>{row.customerName || '—'}</td>
+                                        <td>
+                                          <span style={{ color: barber?.color || 'var(--accent-gold)', fontWeight: 600 }}>
+                                            {barber?.name || row.barberId}
+                                          </span>
+                                        </td>
+                                        <td>
+                                          {row.discount ? (
+                                            <span className="campaign-badge" style={{ fontSize: '0.72rem' }}>{row.discount}</span>
+                                          ) : '—'}
+                                        </td>
+                                        <td className="gold-text">{row.price.toLocaleString('tr-TR')} ₺</td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
               </tbody>
             </table>
           </div>

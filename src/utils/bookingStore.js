@@ -649,7 +649,7 @@ export const getRevenueForRange = (startDateStr, endDateStr) => {
       result.byBarber[bid].count++;
       result.byBarber[bid].revenue += price;
 
-      result.detailRows.push({ dateStr, time: slot.time, customerName: slot.customerName, phone: slot.phone, service: slot.service || '', discount: slot.manualCampaign?.rate || '', price });
+      result.detailRows.push({ dateStr, time: slot.time, customerName: slot.customerName, phone: slot.phone, service: slot.service || '', discount: slot.manualCampaign?.rate || '', price, barberId: bid });
     });
 
     result.totalRevenue += dayRevenue;

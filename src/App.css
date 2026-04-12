@@ -184,9 +184,13 @@
 .slot-tile-hot-deal .slot-tile-status {
   color: #ef4444;
   font-weight: 800;
+  font-size: 0.82rem;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
 .slot-tile-hot-deal .slot-tile-time {
   color: #ef4444;
+  font-size: 1.15rem;
+  text-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
 }
 .slot-tile-fire {
   position: absolute;
