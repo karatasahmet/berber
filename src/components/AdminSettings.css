@@ -321,3 +321,24 @@
   background: var(--success);
   color: #fff;
 }
+
+/* Logo upload */
+.logo-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--accent-gold);
+  border: 1px dashed var(--border-gold);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.logo-upload-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-style: solid;
+}

@@ -532,11 +532,12 @@ export const getPendingBookings = () => {
 export const getPendingCount = () => getPendingBookings().length;
 
 // --- PHONE LOOKUP ---
-export const lookupByPhone = (phone) => {
+export const lookupByPhoneAndName = (phone, customerName) => {
   const all = getAllBookings();
   const results = [];
-  const normalized = phone.replace(/\D/g, '');
-  if (!normalized || normalized.length < 7) return results;
+  const normalizedPhone = phone.replace(/\D/g, '');
+  const normalizedName = customerName.trim().toLocaleLowerCase('tr-TR');
+  if (!normalizedPhone || normalizedPhone.length < 7 || !normalizedName) return results;
 
   Object.entries(all).forEach(([dateStr, dateData]) => {
     const dd = Array.isArray(dateData) ? { default: dateData } : dateData;
@@ -544,7 +545,9 @@ export const lookupByPhone = (phone) => {
       if (!Array.isArray(slots)) return;
       slots.forEach(s => {
         const slot = migrateSlot(s);
-        if (slot.phone && slot.phone.replace(/\D/g, '').includes(normalized)
+        if (slot.phone && slot.customerName
+            && slot.phone.replace(/\D/g, '').includes(normalizedPhone)
+            && slot.customerName.toLocaleLowerCase('tr-TR').includes(normalizedName)
             && (slot.status === 'pending' || slot.status === 'booked')) {
           results.push({ ...slot, dateStr, barberId });
         }

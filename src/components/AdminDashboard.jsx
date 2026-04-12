@@ -37,6 +37,7 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
   const [confirmCancelSlot, setConfirmCancelSlot] = useState(null);
   const [editSlot, setEditSlot] = useState(null);
   const [campaignPromptSlot, setCampaignPromptSlot] = useState(null);
+  const [campaignRate, setCampaignRate] = useState('');
   const [rejectConfirmSlot, setRejectConfirmSlot] = useState(null);
   const [discountSlot, setDiscountSlot] = useState(null);
   const [smsState, setSmsState] = useState(null); // {slot, dateStr, type}
@@ -127,7 +128,24 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
       setManualCampaign(selectedDate, slot.barberId, slot.id, null);
       loadData();
     } else {
-      setCampaignPromptSlot(slot);
+      // Toggle inline input at the slot
+      if (campaignPromptSlot?.id === slot.id) {
+        setCampaignPromptSlot(null);
+        setCampaignRate('');
+      } else {
+        setCampaignPromptSlot(slot);
+        setCampaignRate('');
+      }
+    }
+  };
+
+  const handleInlineCampaignConfirm = () => {
+    const num = parseInt(campaignRate, 10);
+    if (num > 0 && num <= 100 && campaignPromptSlot) {
+      setManualCampaign(selectedDate, campaignPromptSlot.barberId, campaignPromptSlot.id, `%${num} İndirim Fırsatı!`);
+      setCampaignPromptSlot(null);
+      setCampaignRate('');
+      loadData();
     }
   };
 
@@ -467,11 +485,30 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
                               </div>
                             )}
                             {!isBooked && !isPending && (
-                              <button
-                                className={`action-btn ${slot.manualCampaign ? 'remove-campaign-btn' : 'add-campaign-btn'}`}
-                                onClick={() => handleToggleCampaign(slot)}>
-                                {slot.manualCampaign ? '★ Kaldır' : '★ İndirim Ekle'}
-                              </button>
+                              <div style={{ position: 'relative' }}>
+                                <button
+                                  className={`action-btn ${slot.manualCampaign ? 'remove-campaign-btn' : 'add-campaign-btn'}`}
+                                  onClick={() => handleToggleCampaign(slot)}>
+                                  {slot.manualCampaign ? '★ Kaldır' : '★ İndirim Ekle'}
+                                </button>
+                                {campaignPromptSlot?.id === slot.id && (
+                                  <div className="inline-campaign-input">
+                                    <input
+                                      type="number" min="1" max="100" autoFocus
+                                      className="custom-input"
+                                      value={campaignRate}
+                                      onChange={e => setCampaignRate(e.target.value)}
+                                      onKeyDown={e => { if (e.key === 'Enter') handleInlineCampaignConfirm(); if (e.key === 'Escape') { setCampaignPromptSlot(null); setCampaignRate(''); } }}
+                                      placeholder="%"
+                                      style={{ width: 60, padding: '0.3rem 0.4rem', fontSize: '0.8rem' }}
+                                    />
+                                    <button className="action-btn add-campaign-btn" style={{ fontSize: '0.72rem', padding: '0.25rem 0.5rem' }}
+                                      onClick={handleInlineCampaignConfirm}>✓</button>
+                                    <button className="action-btn cancel-btn" style={{ fontSize: '0.72rem', padding: '0.25rem 0.5rem' }}
+                                      onClick={() => { setCampaignPromptSlot(null); setCampaignRate(''); }}>✕</button>
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </td>
                         </tr>
@@ -525,14 +562,8 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
         />
       )}
 
-      {campaignPromptSlot && (
-        <DiscountModal title="İndirim / Fırsat Tanımla" message="Örn: %30 İndirim"
-          onConfirm={(rate) => {
-            if (rate) setManualCampaign(selectedDate, campaignPromptSlot.barberId, campaignPromptSlot.id, `%${rate} İndirim Fırsatı!`);
-            setCampaignPromptSlot(null); loadData();
-          }}
-          onClose={() => setCampaignPromptSlot(null)} />
-      )}
+
+
 
       {rejectConfirmSlot && (
         <ConfirmModal title="Randevuyu Reddet?" message="Bu talep reddedilecek ve müşteriye bildirim önizlemesi gösterilecektir."

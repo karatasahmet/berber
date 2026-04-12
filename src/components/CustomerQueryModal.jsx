@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { lookupByPhone } from '../utils/bookingStore';
+import { lookupByPhoneAndName } from '../utils/bookingStore';
 import './CustomerQueryModal.css';
 
 const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -13,12 +13,14 @@ const formatDate = (dateStr) => {
 
 const CustomerQueryModal = ({ onClose }) => {
   const [phone, setPhone] = useState('');
+  const [name, setName] = useState('');
   const [results, setResults] = useState(null);
   const [searched, setSearched] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const found = lookupByPhone(phone);
+    if (!phone.trim() || !name.trim()) return;
+    const found = lookupByPhoneAndName(phone, name);
     setResults(found);
     setSearched(true);
   };
@@ -34,19 +36,27 @@ const CustomerQueryModal = ({ onClose }) => {
       <div className="modal-content glass-panel animate-slide-up customer-query-modal">
         <button className="modal-close" onClick={onClose}>✕</button>
         <h2 className="query-title">📞 Randevumu Sorgula</h2>
-        <p className="query-sub">Telefon numaranızı girerek randevularınızın durumunu öğrenin.</p>
+        <p className="query-sub">Ad-soyad ve telefon numaranızı girerek randevularınızı sorgulayın.</p>
 
         <form onSubmit={handleSearch} className="query-form">
+          <input
+            type="text"
+            className="custom-input"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Ad Soyad"
+            autoFocus
+            required
+          />
           <input
             type="tel"
             className="custom-input"
             value={phone}
             onChange={e => setPhone(e.target.value)}
             placeholder="05XX XXX XX XX"
-            autoFocus
             required
           />
-          <button type="submit" className="query-search-btn">Sorgula</button>
+          <button type="submit" className="query-search-btn">🔍 Sorgula</button>
         </form>
 
         {searched && results !== null && (
@@ -54,7 +64,7 @@ const CustomerQueryModal = ({ onClose }) => {
             {results.length === 0 ? (
               <div className="query-empty">
                 <span>🔍</span>
-                <p>Bu numara ile randevu bulunamadı.</p>
+                <p>Bu bilgilerle eşleşen randevu bulunamadı.</p>
               </div>
             ) : (
               <>

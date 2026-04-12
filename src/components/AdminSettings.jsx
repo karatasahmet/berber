@@ -172,18 +172,34 @@ const AdminSettings = () => {
               onChange={e => updateSetting('shopName', e.target.value)}
               placeholder="Berber dükkanı adı" />
           </div>
-          <div className="settings-field" style={{ flex: 2 }}>
-            <label>Logo URL <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(opsiyonel)</span></label>
-            <input type="text" className="custom-input" value={settings.shopLogo || ''}
-              onChange={e => updateSetting('shopLogo', e.target.value)}
-              placeholder="https://... veya boş bırakın" />
-          </div>
-          {settings.shopLogo && (
-            <div className="settings-field" style={{ alignItems: 'center' }}>
-              <label>Önizleme</label>
-              <img src={settings.shopLogo} alt="Logo" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-gold)' }} />
+          <div className="settings-field">
+            <label>Logo <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(PNG/JPG)</span></label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              {settings.shopLogo ? (
+                <>
+                  <img src={settings.shopLogo} alt="Logo" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border-gold)' }} />
+                  <button className="btn-cancel" style={{ fontSize: '0.78rem', padding: '0.35rem 0.7rem' }}
+                    onClick={() => updateSetting('shopLogo', '')}>✕ Kaldır</button>
+                </>
+              ) : (
+                <label className="logo-upload-btn">
+                  📷 Logo Yükle
+                  <input type="file" accept=".png,.jpg,.jpeg,.webp" hidden
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 500000) {
+                        setToast({ message: 'Logo 500KB\'den küçük olmalı!', type: 'error' });
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = () => updateSetting('shopLogo', reader.result);
+                      reader.readAsDataURL(file);
+                    }} />
+                </label>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
