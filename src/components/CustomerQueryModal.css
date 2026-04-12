@@ -1,0 +1,123 @@
+/* CustomerQueryModal CSS */
+.customer-query-modal {
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  padding: 2rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.query-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.query-sub {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+.query-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.query-form .custom-input {
+  flex: 1;
+}
+
+.query-search-btn {
+  padding: 0.7rem 1.2rem;
+  background: var(--accent-gold);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.query-search-btn:hover {
+  background: var(--accent-gold-light, #e5c55a);
+  transform: translateY(-1px);
+}
+
+.query-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.query-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.query-result-card {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.qrc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qrc-date {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.qrc-time {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.qrc-service {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.qrc-note {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.qrc-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.qrc-discount {
+  font-size: 0.82rem;
+  color: var(--accent-gold);
+}
+
+.query-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.query-empty span {
+  font-size: 2rem;
+}

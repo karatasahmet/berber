@@ -1,0 +1,87 @@
+.custom-modal-overlay {
+  z-index: 3000;
+}
+
+.custom-modal-content {
+  max-width: 400px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.custom-modal-content h2 {
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-gold);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.custom-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+}
+
+.custom-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.custom-actions button {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-thin);
+}
+
+.btn-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.btn-confirm {
+  background-color: var(--accent-gold);
+  color: var(--text-inverse);
+  border: 1px solid var(--accent-gold);
+}
+
+.btn-confirm:hover {
+  background-color: var(--accent-gold-hover);
+}
+
+.btn-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background-color: var(--danger);
+  color: #fff;
+}

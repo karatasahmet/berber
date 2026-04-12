@@ -1,0 +1,162 @@
+.time-slot-card {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--transition-normal);
+  cursor: pointer;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.time-slot-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--border-thin);
+  transition: var(--transition-normal);
+}
+
+.time-slot-card.available:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-gold);
+}
+
+.time-slot-card.available:hover::before {
+  background-color: var(--accent-gold);
+}
+
+.time-slot-card.booked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(80%);
+}
+
+.time-slot-card.pending {
+  cursor: not-allowed;
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.time-slot-card.pending::before {
+  background-color: #eab308;
+}
+
+.status-badge.pending-badge {
+  background-color: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  animation: pendingPulse 2s infinite;
+}
+
+@keyframes pendingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.time-indicator {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.slot-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex: 1;
+  padding-left: 2rem;
+}
+
+.status-badge {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.status-badge.open {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.status-badge.closed {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.campaign-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-inverse);
+  background-color: var(--accent-gold);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  box-shadow: 0 0 10px var(--accent-gold-glow);
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.action-area {
+  display: flex;
+  align-items: center;
+}
+
+.book-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-thin);
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.time-slot-card.available:hover .book-btn {
+  background: var(--accent-gold);
+  color: var(--text-inverse);
+  border-color: var(--accent-gold);
+}
+
+.time-slot-card.campaign {
+  border-color: var(--accent-gold);
+}
+
+@media (max-width: 600px) {
+  .time-slot-card {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .slot-details {
+    padding-left: 0;
+    width: 100%;
+    order: 3;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .action-area {
+    margin-left: auto;
+  }
+}

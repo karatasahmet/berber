@@ -1,0 +1,11 @@
+
+netstat -ano | findstr :5173
+
+npm run dev
+
+npm run build
+
+npm run build > build_output.txt 2>&1
+
+Get-Content -Path build_output.txt -Encoding utf8 -ErrorAction SilentlyContinue
+

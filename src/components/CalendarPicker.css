@@ -1,0 +1,221 @@
+/* ========================================
+   CalendarPicker Styles
+   ======================================== */
+
+.calendar-picker {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 1rem;
+}
+
+/* Header */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cal-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-thin);
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 2px;
+}
+
+.cal-nav-btn:hover {
+  background: var(--accent-gold);
+  color: var(--text-inverse);
+  border-color: var(--accent-gold);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day-label {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 0 8px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  border: 1px solid transparent;
+  min-width: 0;
+}
+
+.cal-empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal-day-num {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+/* Dot indicators */
+.cal-dot,
+.leg-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: block;
+}
+
+.dot-available,
+.leg-dot.dot-available {
+  background: var(--success);
+  box-shadow: 0 0 4px rgba(34,197,94,0.6);
+}
+
+.dot-pending,
+.leg-dot.dot-pending {
+  background: #eab308;
+  box-shadow: 0 0 4px rgba(234,179,8,0.6);
+}
+
+.dot-busy,
+.leg-dot.dot-busy {
+  background: #f59e0b;
+  box-shadow: 0 0 4px rgba(245,158,11,0.6);
+}
+
+.dot-full,
+.leg-dot.dot-full {
+  background: var(--danger);
+  box-shadow: 0 0 4px rgba(239,68,68,0.5);
+}
+
+.dot-closed,
+.leg-dot.dot-closed {
+  background: var(--text-muted);
+}
+
+.dot-past {
+  display: none;
+}
+
+/* State styles */
+.cal-available:hover {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.cal-busy:hover {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.cal-full {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cal-closed {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+.cal-closed .cal-day-num {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.cal-past {
+  cursor: default;
+  opacity: 0.3;
+}
+.cal-past .cal-day-num {
+  color: var(--text-muted);
+}
+
+/* Selected */
+.cal-selected {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-color: var(--accent-gold) !important;
+  box-shadow: var(--shadow-glow);
+}
+.cal-selected .cal-day-num {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+/* Today ring */
+.cal-today:not(.cal-selected) {
+  border-color: rgba(212, 175, 55, 0.35);
+}
+.cal-today:not(.cal-selected) .cal-day-num {
+  color: var(--accent-gold);
+}
+
+/* Legend */
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-thin);
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Selected date label */
+.calendar-selected-label {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-gold);
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1rem;
+  margin-top: 0.25rem;
+}

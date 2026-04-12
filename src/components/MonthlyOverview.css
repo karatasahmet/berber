@@ -1,0 +1,167 @@
+/* =========================================
+   MonthlyOverview Styles
+   ========================================= */
+
+.monthly-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Day headers row */
+.month-day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.month-day-header {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0;
+}
+
+/* Main grid */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.month-cell {
+  min-height: 90px;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.month-cell.empty {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+.month-cell-open:hover {
+  border-color: var(--accent-gold);
+  transform: scale(1.02);
+  z-index: 1;
+}
+
+.month-cell-closed {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.month-cell-today {
+  border-color: var(--accent-gold) !important;
+  background: rgba(212, 175, 55, 0.06) !important;
+}
+
+.month-cell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.month-day-num {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.today-num {
+  color: var(--accent-gold);
+}
+
+.month-day-abbr {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.month-cell-closed-label {
+  font-size: 0.65rem;
+  color: var(--danger);
+  margin-top: auto;
+  text-align: center;
+}
+
+/* Fill bar */
+.month-fill-bar {
+  height: 3px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.month-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+/* Stats */
+.month-cell-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  margin-top: auto;
+}
+
+.month-cell-stats > span:first-child {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.pending-chip {
+  font-size: 0.6rem;
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  border-radius: 999px;
+  padding: 1px 5px;
+}
+
+.month-revenue {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  margin-left: auto;
+}
+
+@media (max-width: 700px) {
+  .month-cell {
+    min-height: 60px;
+    padding: 0.3rem;
+  }
+  .month-day-num {
+    font-size: 0.8rem;
+  }
+  .month-revenue {
+    display: none;
+  }
+}

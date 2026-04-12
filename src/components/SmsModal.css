@@ -1,0 +1,105 @@
+/* SmsModal CSS */
+.sms-modal {
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  padding: 2rem;
+  text-align: center;
+}
+
+.sms-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sms-icon { font-size: 2.5rem; }
+
+.sms-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.sms-approved h2 { color: var(--success); }
+.sms-rejected h2 { color: var(--danger); }
+
+.sms-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.sms-preview {
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  border: 1px solid var(--border-thin);
+}
+
+.sms-bubble {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.sms-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.sms-copy-btn {
+  padding: 0.6rem 1.2rem;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-thin);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sms-copy-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.sms-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  background: #25D366;
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.sms-wa-btn:hover {
+  background: #128C7E;
+  transform: translateY(-1px);
+}
+
+.sms-close-btn {
+  padding: 0.6rem 2rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-thin);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sms-close-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
+}

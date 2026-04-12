@@ -1,0 +1,408 @@
+/* BookingModal v3 — service + barber + personal info */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 560px;
+  padding: 2rem;
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.booking-modal { max-width: 560px; }
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-thin);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  z-index: 1;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* Header */
+.bm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-right: 2rem;
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.bm-time-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.bm-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.bm-time {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+/* Section */
+.bm-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-thin);
+}
+
+.bm-section-label {
+  font-size: 0.82rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+}
+
+/* Service grid */
+.bm-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.bm-service-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.65rem 0.9rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-thin);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.bm-service-btn:hover {
+  border-color: var(--accent-gold);
+}
+
+.bm-service-btn.bm-selected {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--accent-gold);
+}
+
+.bm-svc-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.bm-svc-dur {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* Step indicator */
+.bm-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-thin);
+}
+
+.bm-step {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.bm-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-thin);
+  transition: all 0.2s;
+}
+
+.bm-step-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.bm-step-line {
+  flex: none;
+  width: 24px;
+  height: 1px;
+  background: var(--border-thin);
+  margin: 0 0.25rem;
+}
+
+.bm-step-active .bm-step-num {
+  background: var(--accent-gold);
+  color: var(--text-inverse);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+.bm-step-active .bm-step-label { color: var(--accent-gold); font-weight: 600; }
+
+.bm-step-done .bm-step-num {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border-color: #22c55e;
+}
+.bm-step-done .bm-step-label { color: #22c55e; }
+
+.bm-step-waiting .bm-step-num { opacity: 0.4; }
+.bm-step-waiting .bm-step-label { opacity: 0.4; }
+
+/* Barber grid */
+.bm-barber-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.bm-barber-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-thin);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+}
+
+.bm-barber-btn:not(.bm-barber-disabled):hover {
+  border-color: var(--barber-color, var(--accent-gold));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.bm-barber-btn.bm-selected {
+  background: color-mix(in srgb, var(--barber-color, var(--accent-gold)) 15%, transparent);
+  border-color: var(--barber-color, var(--accent-gold));
+  box-shadow: 0 0 0 1px var(--barber-color, var(--accent-gold));
+}
+
+/* Dolu/disabled berber kartı */
+.bm-barber-btn.bm-barber-disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+.bm-barber-btn.bm-barber-disabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(0,0,0,0.04) 5px,
+    rgba(0,0,0,0.04) 10px
+  );
+  pointer-events: none;
+}
+
+.bm-barber-btn .bm-barber-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bm-barber-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bm-barber-name { font-size: 0.9rem; font-weight: 600; }
+
+/* Berber durum badge */
+.bm-barber-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.bm-status-avail {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+.bm-status-full {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Available count hint */
+.bm-barber-avail-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 0.25rem;
+}
+
+/* No barber */
+.bm-no-barber {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Personal form */
+.bm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-thin);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+/* Summary bar */
+.bm-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding: 0.65rem 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-thin);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.bm-summary span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Confirm button */
+.confirm-btn {
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--accent-gold);
+  color: var(--text-inverse);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+}
