@@ -140,12 +140,13 @@ const App = () => {
 
           {!isClosed && allSlots.length > 0 && (
             <div className="slots-grid">
-              {allSlots.map(({ time, status, campaign }) => {
+              {allSlots.map(({ time, status, campaign, campaignRate }) => {
                 const isAvailable = status === 'available';
                 const isPending   = status === 'pending';
                 const isFull      = status === 'full';
                 const isCampaign  = isAvailable && !!campaign;
-                const isClickable = isAvailable; // Bekliyor ve dolu tıklanamaz
+                const isHotDeal   = isCampaign && campaignRate >= 50;
+                const isClickable = isAvailable;
                 return (
                   <div
                     key={time}
@@ -154,7 +155,8 @@ const App = () => {
                       isFull     ? 'slot-tile-full'      : '',
                       isPending  ? 'slot-tile-pending'   : '',
                       isAvailable && !isCampaign ? 'slot-tile-available' : '',
-                      isCampaign ? 'slot-tile-campaign'  : '',
+                      isCampaign && !isHotDeal ? 'slot-tile-campaign'  : '',
+                      isHotDeal  ? 'slot-tile-hot-deal'  : '',
                     ].filter(Boolean).join(' ')}
                     onClick={() => isClickable && setSelectedSlot({ time })}
                     title={
@@ -171,6 +173,7 @@ const App = () => {
                        isCampaign ? campaign :
                        'Müsait'}
                     </span>
+                    {isHotDeal && <span className="slot-tile-fire">🔥</span>}
                   </div>
                 );
               })}

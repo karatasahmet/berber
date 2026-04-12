@@ -166,7 +166,51 @@
   background: rgba(212, 175, 55, 0.2);
   border-color: var(--accent-gold);
 }
-.slot-tile-campaign .slot-tile-status { color: var(--accent-gold); }
+.slot-tile-campaign .slot-tile-status { color: var(--accent-gold); font-weight: 700; }
+
+/* Hot Deal — %50+ indirim, kırmızı yanıp sönen */
+.slot-tile-hot-deal {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  animation: hotDealPulse 1.5s ease-in-out infinite;
+  position: relative;
+}
+.slot-tile-hot-deal:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+}
+.slot-tile-hot-deal .slot-tile-status {
+  color: #ef4444;
+  font-weight: 800;
+}
+.slot-tile-hot-deal .slot-tile-time {
+  color: #ef4444;
+}
+.slot-tile-fire {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  font-size: 0.85rem;
+  animation: fireWiggle 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes hotDealPulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.5), 0 0 4px rgba(239, 68, 68, 0.3) inset;
+    border-color: rgba(239, 68, 68, 0.7);
+  }
+}
+
+@keyframes fireWiggle {
+  0% { transform: rotate(-8deg) scale(1); }
+  100% { transform: rotate(8deg) scale(1.15); }
+}
 
 /* Pending — Bekliyor (sarı, tıklanamaz) */
 .slot-tile-pending {

@@ -395,6 +395,25 @@
   50% { box-shadow: 0 0 12px rgba(212, 175, 55, 0.5); }
 }
 
+/* Hot deal campaign badge — %50+ */
+.bm-barber-campaign-hot {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  animation: hotCampaignPulse 1.2s ease-in-out infinite !important;
+}
+
+@keyframes hotCampaignPulse {
+  0%, 100% { 
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+    transform: scale(1.05);
+  }
+}
+
 /* Price Summary */
 .bm-price-summary {
   margin: 0.75rem 0;

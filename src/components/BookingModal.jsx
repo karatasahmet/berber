@@ -130,9 +130,16 @@ const BookingModal = ({ slot, dateStr, onConfirm, onClose }) => {
                   ) : (
                     <span className="bm-barber-status bm-status-full">Dolu</span>
                   )}
-                  {b.campaign && (
-                    <span className="bm-barber-campaign">{b.campaign}</span>
-                  )}
+                  {b.campaign && (() => {
+                    const rateMatch = b.campaign.match(/(\d+)/);
+                    const rate = rateMatch ? parseInt(rateMatch[1]) : 0;
+                    const isHot = rate >= 50;
+                    return (
+                      <span className={`bm-barber-campaign ${isHot ? 'bm-barber-campaign-hot' : ''}`}>
+                        {b.campaign} {isHot && '🔥'}
+                      </span>
+                    );
+                  })()}
                 </button>
               );
             })}

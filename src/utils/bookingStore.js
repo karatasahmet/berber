@@ -195,18 +195,28 @@ export const getAllTimeSlotsForDate = (dateStr) => {
   if (isClosedDay(dateStr, settings)) return [];
   const dd = getDateData(dateStr);
 
-  // Her saat için: müsait var mı, bekleyen var mı, kampanya var mı?
+  // Her saat için: müsait var mı, bekleyen var mı, en yüksek kampanya hangisi?
   const timeMap = {};
+
+  const extractRate = (rateStr) => {
+    if (!rateStr) return 0;
+    const m = rateStr.match(/(\d+)/);
+    return m ? parseInt(m[1]) : 0;
+  };
 
   Object.entries(dd).forEach(([bid, slots]) => {
     if (!Array.isArray(slots)) return;
     slots.filter(s => !s.blockedBy).forEach(s => {
-      if (!timeMap[s.time]) timeMap[s.time] = { hasAvailable: false, hasPending: false, campaign: null };
+      if (!timeMap[s.time]) timeMap[s.time] = { hasAvailable: false, hasPending: false, campaign: null, maxRate: 0 };
       if (s.status === 'available') {
         timeMap[s.time].hasAvailable = true;
-        // Eğer bu slot'ta admin tanımlı kampanya varsa, müşteriye göster
-        if (s.manualCampaign && !timeMap[s.time].campaign) {
-          timeMap[s.time].campaign = s.manualCampaign.rate;
+        // En yüksek indirim oranını bul
+        if (s.manualCampaign) {
+          const rate = extractRate(s.manualCampaign.rate);
+          if (rate > timeMap[s.time].maxRate) {
+            timeMap[s.time].maxRate = rate;
+            timeMap[s.time].campaign = s.manualCampaign.rate;
+          }
         }
       }
       if (s.status === 'pending') timeMap[s.time].hasPending = true;
@@ -215,10 +225,11 @@ export const getAllTimeSlotsForDate = (dateStr) => {
 
   return Object.entries(timeMap)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([time, { hasAvailable, hasPending, campaign }]) => ({
+    .map(([time, { hasAvailable, hasPending, campaign, maxRate }]) => ({
       time,
       status: hasAvailable ? 'available' : hasPending ? 'pending' : 'full',
-      campaign, // admin tanımlı indirim bilgisi
+      campaign,
+      campaignRate: maxRate, // numeric rate for styling (e.g. 50+ = red blink)
     }));
 };
 

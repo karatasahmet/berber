@@ -23,6 +23,7 @@ const AdminSettings = () => {
   // New barber
   const [newBarberName, setNewBarberName] = useState('');
   const [newBarberColor, setNewBarberColor] = useState('#D4AF37');
+  const [colorPickerOpen, setColorPickerOpen] = useState(null); // barberId or 'new'
 
   const handleSave = () => {
     saveSettings(settings);
@@ -245,30 +246,41 @@ const AdminSettings = () => {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {settings.barbers.map(b => (
-            <div key={b.id} className="barber-row">
-              <div className="barber-color-dot" style={{ background: b.color }} />
-              <input type="text" className="custom-input" value={b.name}
-                onChange={e => toggleBarber(b.id, 'name', e.target.value)}
-                style={{ flex: 1 }} />
-              <div className="color-palette">
-                {BARBER_COLORS.map(c => (
-                  <button
-                    key={c.hex}
-                    type="button"
-                    className={`color-swatch ${b.color === c.hex ? 'color-swatch-active' : ''}`}
-                    style={{ background: c.hex }}
-                    onClick={() => toggleBarber(b.id, 'color', c.hex)}
-                    title={c.name}
-                  />
-                ))}
+            <div key={b.id} className="barber-row-wrap">
+              <div className="barber-row">
+                <div
+                  className="barber-color-dot barber-color-dot-clickable"
+                  style={{ background: b.color }}
+                  onClick={() => setColorPickerOpen(colorPickerOpen === b.id ? null : b.id)}
+                  title="Renk seçmek için tıklayın"
+                />
+                <input type="text" className="custom-input" value={b.name}
+                  onChange={e => toggleBarber(b.id, 'name', e.target.value)}
+                  style={{ flex: 1 }} />
+                <label className="toggle-label">
+                  <input type="checkbox" checked={b.active}
+                    onChange={e => toggleBarber(b.id, 'active', e.target.checked)} />
+                  <span>Aktif</span>
+                </label>
+                {settings.barbers.length > 1 && (
+                  <button className="remove-x" onClick={() => removeBarber(b.id)}>✕</button>
+                )}
               </div>
-              <label className="toggle-label">
-                <input type="checkbox" checked={b.active}
-                  onChange={e => toggleBarber(b.id, 'active', e.target.checked)} />
-                <span>Aktif</span>
-              </label>
-              {settings.barbers.length > 1 && (
-                <button className="remove-x" onClick={() => removeBarber(b.id)}>✕</button>
+              {colorPickerOpen === b.id && (
+                <div className="color-palette color-palette-dropdown">
+                  {BARBER_COLORS.map(c => (
+                    <button
+                      key={c.hex}
+                      type="button"
+                      className={`color-swatch ${b.color === c.hex ? 'color-swatch-active' : ''}`}
+                      style={{ background: c.hex }}
+                      onClick={() => { toggleBarber(b.id, 'color', c.hex); setColorPickerOpen(null); }}
+                      title={c.name}
+                    >
+                      <span className="color-swatch-label">{c.name}</span>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
           ))}
@@ -278,18 +290,28 @@ const AdminSettings = () => {
             onChange={e => setNewBarberName(e.target.value)} 
             onKeyDown={e => e.key === 'Enter' && addBarber()}
             style={{ flex: 1 }} />
-          <div className="color-palette">
-            {BARBER_COLORS.map(c => (
-              <button
-                key={c.hex}
-                type="button"
-                className={`color-swatch ${newBarberColor === c.hex ? 'color-swatch-active' : ''}`}
-                style={{ background: c.hex }}
-                onClick={() => setNewBarberColor(c.hex)}
-                title={c.name}
-              />
-            ))}
-          </div>
+          <div
+            className="barber-color-dot barber-color-dot-clickable"
+            style={{ background: newBarberColor }}
+            onClick={() => setColorPickerOpen(colorPickerOpen === 'new' ? null : 'new')}
+            title="Renk seç"
+          />
+          {colorPickerOpen === 'new' && (
+            <div className="color-palette color-palette-dropdown">
+              {BARBER_COLORS.map(c => (
+                <button
+                  key={c.hex}
+                  type="button"
+                  className={`color-swatch ${newBarberColor === c.hex ? 'color-swatch-active' : ''}`}
+                  style={{ background: c.hex }}
+                  onClick={() => { setNewBarberColor(c.hex); setColorPickerOpen(null); }}
+                  title={c.name}
+                >
+                  <span className="color-swatch-label">{c.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <button className="btn-gold" onClick={addBarber}>+ Berber Ekle</button>
         </div>
       </div>
