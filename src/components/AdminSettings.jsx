@@ -115,7 +115,18 @@ const AdminSettings = () => {
   };
 
   const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
-  const BARBER_COLORS = ['#D4AF37', '#22c55e', '#3b82f6', '#a855f7', '#ef4444', '#f59e0b', '#06b6d4'];
+  const BARBER_COLORS = [
+    { hex: '#D4AF37', name: 'Altın' },
+    { hex: '#22c55e', name: 'Yeşil' },
+    { hex: '#3b82f6', name: 'Mavi' },
+    { hex: '#a855f7', name: 'Mor' },
+    { hex: '#ef4444', name: 'Kırmızı' },
+    { hex: '#f59e0b', name: 'Turuncu' },
+    { hex: '#06b6d4', name: 'Turkuaz' },
+    { hex: '#ec4899', name: 'Pembe' },
+    { hex: '#8b5cf6', name: 'Lavanta' },
+    { hex: '#14b8a6', name: 'Nane' },
+  ];
 
   return (
     <div className="admin-settings animate-slide-up">
@@ -239,10 +250,18 @@ const AdminSettings = () => {
               <input type="text" className="custom-input" value={b.name}
                 onChange={e => toggleBarber(b.id, 'name', e.target.value)}
                 style={{ flex: 1 }} />
-              <select className="custom-input" style={{ width: 'auto' }} value={b.color}
-                onChange={e => toggleBarber(b.id, 'color', e.target.value)}>
-                {BARBER_COLORS.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <div className="color-palette">
+                {BARBER_COLORS.map(c => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    className={`color-swatch ${b.color === c.hex ? 'color-swatch-active' : ''}`}
+                    style={{ background: c.hex }}
+                    onClick={() => toggleBarber(b.id, 'color', c.hex)}
+                    title={c.name}
+                  />
+                ))}
+              </div>
               <label className="toggle-label">
                 <input type="checkbox" checked={b.active}
                   onChange={e => toggleBarber(b.id, 'active', e.target.checked)} />
@@ -259,11 +278,18 @@ const AdminSettings = () => {
             onChange={e => setNewBarberName(e.target.value)} 
             onKeyDown={e => e.key === 'Enter' && addBarber()}
             style={{ flex: 1 }} />
-          <select className="custom-input" style={{ width: 'auto' }} value={newBarberColor}
-            onChange={e => setNewBarberColor(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && addBarber()}>
-            {BARBER_COLORS.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <div className="color-palette">
+            {BARBER_COLORS.map(c => (
+              <button
+                key={c.hex}
+                type="button"
+                className={`color-swatch ${newBarberColor === c.hex ? 'color-swatch-active' : ''}`}
+                style={{ background: c.hex }}
+                onClick={() => setNewBarberColor(c.hex)}
+                title={c.name}
+              />
+            ))}
+          </div>
           <button className="btn-gold" onClick={addBarber}>+ Berber Ekle</button>
         </div>
       </div>

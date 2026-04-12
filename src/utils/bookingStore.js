@@ -284,6 +284,35 @@ export const getAllBarbersWithStatusForSlot = (dateStr, time, serviceName) => {
   });
 };
 
+// --- GET BARBERS WITH CAMPAIGNS for a time slot (customer view: berber seçimi) ---
+export const getBarbersWithCampaigns = (dateStr, time) => {
+  const settings = getSettings();
+  const dd = getDateData(dateStr);
+  const activeBarbers = settings.barbers?.filter(b => b.active) || [];
+
+  return activeBarbers.map(barber => {
+    const slots = dd[barber.id];
+    let campaign = null;
+    let hasAvailableSlot = false;
+
+    if (Array.isArray(slots)) {
+      const slot = slots.find(s => s.time === time && !s.blockedBy);
+      if (slot) {
+        if (slot.status === 'available') hasAvailableSlot = true;
+        if (slot.manualCampaign) campaign = slot.manualCampaign.rate;
+      }
+    }
+
+    return {
+      id: barber.id,
+      name: barber.name,
+      color: barber.color,
+      available: hasAvailableSlot,
+      campaign,
+    };
+  });
+};
+
 export const getAvailableSlotsForService = (dateStr, serviceName, filteredBarberId = null) => {
   const settings = getSettings();
   const duration = getServiceDuration(serviceName, settings);

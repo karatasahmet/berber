@@ -31,6 +31,7 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
   const [pendingBookings, setPendingBookings] = useState([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [selectedBarberFilter, setSelectedBarberFilter] = useState('all');
+  const [expandedSlots, setExpandedSlots] = useState({}); // track expanded service detail rows
 
   // Modals
   const [confirmCancelSlot, setConfirmCancelSlot] = useState(null);
@@ -144,6 +145,24 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
     return b?.color || '#D4AF37';
   };
 
+  const toggleSlotExpand = (slotId) => {
+    setExpandedSlots(prev => ({ ...prev, [slotId]: !prev[slotId] }));
+  };
+
+  const getSlotPriceInfo = (slot) => {
+    if (!slot.service) return null;
+    const svc = settings.prices?.[slot.service];
+    const basePrice = typeof svc === 'object' ? (svc?.price || 0) : (svc || 0);
+    let discountRate = 0;
+    if (slot.manualCampaign) {
+      const m = slot.manualCampaign.rate.match(/(\d+)/);
+      if (m) discountRate = parseInt(m[1]);
+    }
+    const discountAmount = basePrice * discountRate / 100;
+    const finalPrice = basePrice - discountAmount;
+    return { basePrice, discountRate, discountAmount, finalPrice };
+  };
+
   const tabs = [
     { id: 'pending', label: `🔔 Bekleyen${pendingCount > 0 ? ` (${pendingCount})` : ''}`, alert: pendingCount > 0 },
     { id: 'bookings', label: '📅 Randevular' },
@@ -251,30 +270,74 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
                 <thead>
                   <tr>
                     <th>Tarih</th><th>Saat</th><th>Müşteri</th>
-                    <th>Hizmet</th><th>Berber</th><th>Not</th><th>Aksiyonlar</th>
+                    <th>Hizmet / Detay</th><th>Berber</th><th>Not</th><th>Aksiyonlar</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingBookings.map(slot => (
-                    <tr key={`${slot.dateStr}-${slot.id}`} className="row-pending">
-                      <td style={{ fontSize: '0.9rem' }}>{formatDate(slot.dateStr)}</td>
-                      <td className="col-time">{slot.time}</td>
-                      <td>
-                        <div className="cust-name">{slot.customerName}</div>
-                        <div className="cust-phone">{slot.phone}</div>
-                      </td>
-                      <td>{slot.service}<br/><span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{slot.duration} dk</span></td>
-                      <td>
-                        <span style={{ color: barberColor(slot.barberId), fontWeight: 600, fontSize: '0.85rem' }}>
-                          {barberName(slot.barberId)}
-                        </span>
-                      </td>
-                      <td style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '120px' }}>
-                        {slot.note || '—'}
-                      </td>
-                      <td><PendingActions slot={slot} dateStr={slot.dateStr} /></td>
-                    </tr>
-                  ))}
+                  {pendingBookings.map(slot => {
+                    const priceInfo = getSlotPriceInfo(slot);
+                    const isExpanded = expandedSlots[`p-${slot.dateStr}-${slot.id}`];
+                    return (
+                      <React.Fragment key={`${slot.dateStr}-${slot.id}`}>
+                        <tr className="row-pending">
+                          <td style={{ fontSize: '0.9rem' }}>{formatDate(slot.dateStr)}</td>
+                          <td className="col-time">{slot.time}</td>
+                          <td>
+                            <div className="cust-name">{slot.customerName}</div>
+                            <div className="cust-phone">{slot.phone}</div>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span>{slot.service}</span>
+                              {priceInfo && (
+                                <button
+                                  className="detail-toggle-btn"
+                                  onClick={() => toggleSlotExpand(`p-${slot.dateStr}-${slot.id}`)}
+                                  title="Detay göster"
+                                >
+                                  {isExpanded ? '▾' : '▸'} ₺
+                                </button>
+                              )}
+                            </div>
+                            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{slot.duration} dk</span>
+                            {slot.manualCampaign && (
+                              <div style={{ marginTop: '3px' }}>
+                                <span className="campaign-badge" style={{ fontSize: '0.72rem' }}>{slot.manualCampaign.rate}</span>
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <span style={{ color: barberColor(slot.barberId), fontWeight: 600, fontSize: '0.85rem' }}>
+                              {barberName(slot.barberId)}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '120px' }}>
+                            {slot.note || '—'}
+                          </td>
+                          <td><PendingActions slot={slot} dateStr={slot.dateStr} /></td>
+                        </tr>
+                        {isExpanded && priceInfo && (
+                          <tr className="detail-row">
+                            <td colSpan="7">
+                              <div className="detail-row-content">
+                                <span>💈 {slot.service}</span>
+                                <span>Fiyat: <strong>{priceInfo.basePrice.toLocaleString('tr-TR')} ₺</strong></span>
+                                {priceInfo.discountRate > 0 && (
+                                  <>
+                                    <span style={{ color: 'var(--danger)' }}>İndirim: %{priceInfo.discountRate} (-{priceInfo.discountAmount.toLocaleString('tr-TR')} ₺)</span>
+                                    <span style={{ color: 'var(--success)', fontWeight: 700 }}>Ödenecek: {priceInfo.finalPrice.toLocaleString('tr-TR')} ₺</span>
+                                  </>
+                                )}
+                                {priceInfo.discountRate === 0 && (
+                                  <span style={{ color: 'var(--success)', fontWeight: 700 }}>Ödenecek: {priceInfo.finalPrice.toLocaleString('tr-TR')} ₺</span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -346,57 +409,92 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
                       isPast ? 'row-past' : 'row-upcoming'
                     ].join(' ');
 
+                    const priceInfo = getSlotPriceInfo(slot);
+                    const isExpanded = expandedSlots[`b-${slot.id}`];
+
                     return (
-                      <tr key={slot.id} className={rowClass}>
-                        <td className="col-time">{slot.time}</td>
-                        <td>
-                          {isBooked && (isPast ? <span className="status-badge status-completed">Tamamlandı</span> : <span className="status-badge status-booked">Dolu</span>)}
-                          {isPending && <span className="status-badge status-pending">Bekliyor</span>}
-                          {!isBooked && !isPending && (isPast ? <span className="status-badge status-expired">Geçti</span> : <span className="status-badge status-available">Müsait</span>)}
-                          {slot.manualCampaign && !isPast && (
-                            <div style={{ marginTop: '4px' }}>
-                              <span className="campaign-badge" style={{ fontSize: '0.7rem' }}>{slot.manualCampaign.rate}</span>
+                      <React.Fragment key={slot.id}>
+                        <tr className={rowClass}>
+                          <td className="col-time">{slot.time}</td>
+                          <td>
+                            {isBooked && (isPast ? <span className="status-badge status-completed">Tamamlandı</span> : <span className="status-badge status-booked">Dolu</span>)}
+                            {isPending && <span className="status-badge status-pending">Bekliyor</span>}
+                            {!isBooked && !isPending && (isPast ? <span className="status-badge status-expired">Geçti</span> : <span className="status-badge status-available">Müsait</span>)}
+                            {slot.manualCampaign && (
+                              <div style={{ marginTop: '4px' }}>
+                                <span className="campaign-badge" style={{ fontSize: '0.7rem' }}>{slot.manualCampaign.rate}</span>
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            {(isBooked || isPending) ? (<><div className="cust-name">{slot.customerName}</div><div className="cust-phone">{slot.phone}</div></>) : '—'}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span>{slot.service || '—'}</span>
+                              {priceInfo && (isBooked || isPending) && (
+                                <button
+                                  className="detail-toggle-btn"
+                                  onClick={() => toggleSlotExpand(`b-${slot.id}`)}
+                                  title="Fiyat detayı"
+                                >
+                                  {isExpanded ? '▾' : '▸'} ₺
+                                </button>
+                              )}
                             </div>
-                          )}
-                        </td>
-                        <td>
-                          {(isBooked || isPending) ? (<><div className="cust-name">{slot.customerName}</div><div className="cust-phone">{slot.phone}</div></>) : '—'}
-                        </td>
-                        <td>
-                          {slot.service || '—'}
-                          {slot.duration > 0 && <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{slot.duration} dk</div>}
-                        </td>
-                        <td>
-                          <span style={{ color: barberColor(slot.barberId), fontWeight: 600, fontSize: '0.85rem' }}>
-                            {barberName(slot.barberId)}
-                          </span>
-                        </td>
-                        <td style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '100px' }}>
-                          {slot.note || '—'}
-                        </td>
-                        <td>
-                          {isPending && <PendingActions slot={slot} dateStr={selectedDate} />}
-                          {isBooked && (
-                            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                              <button className="action-btn" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-thin)' }}
-                                onClick={() => setEditSlot({ ...slot, dateStr: selectedDate })}>
-                                ✏️ Düzenle
+                            {slot.duration > 0 && <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{slot.duration} dk</div>}
+                          </td>
+                          <td>
+                            <span style={{ color: barberColor(slot.barberId), fontWeight: 600, fontSize: '0.85rem' }}>
+                              {barberName(slot.barberId)}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: '100px' }}>
+                            {slot.note || '—'}
+                          </td>
+                          <td>
+                            {isPending && <PendingActions slot={slot} dateStr={selectedDate} />}
+                            {isBooked && (
+                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                <button className="action-btn" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-thin)' }}
+                                  onClick={() => setEditSlot({ ...slot, dateStr: selectedDate })}>
+                                  ✏️ Düzenle
+                                </button>
+                                <button className="action-btn cancel-btn"
+                                  onClick={() => setConfirmCancelSlot({ dateStr: selectedDate, barberId: slot.barberId, slotId: slot.id })}>
+                                  İptal Et
+                                </button>
+                              </div>
+                            )}
+                            {!isBooked && !isPending && (
+                              <button
+                                className={`action-btn ${slot.manualCampaign ? 'remove-campaign-btn' : 'add-campaign-btn'}`}
+                                onClick={() => handleToggleCampaign(slot)}>
+                                {slot.manualCampaign ? '★ Kaldır' : '★ İndirim Ekle'}
                               </button>
-                              <button className="action-btn cancel-btn"
-                                onClick={() => setConfirmCancelSlot({ dateStr: selectedDate, barberId: slot.barberId, slotId: slot.id })}>
-                                İptal Et
-                              </button>
-                            </div>
-                          )}
-                          {!isBooked && !isPending && (
-                            <button
-                              className={`action-btn ${slot.manualCampaign ? 'remove-campaign-btn' : 'add-campaign-btn'}`}
-                              onClick={() => handleToggleCampaign(slot)}>
-                              {slot.manualCampaign ? '★ Kaldır' : '★ İndirim Ekle'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
+                            )}
+                          </td>
+                        </tr>
+                        {isExpanded && priceInfo && (
+                          <tr className="detail-row">
+                            <td colSpan="7">
+                              <div className="detail-row-content">
+                                <span>💈 {slot.service}</span>
+                                <span>Fiyat: <strong>{priceInfo.basePrice.toLocaleString('tr-TR')} ₺</strong></span>
+                                {priceInfo.discountRate > 0 && (
+                                  <>
+                                    <span style={{ color: 'var(--danger)' }}>İndirim: %{priceInfo.discountRate} (-{priceInfo.discountAmount.toLocaleString('tr-TR')} ₺)</span>
+                                    <span style={{ color: 'var(--success)', fontWeight: 700 }}>Ödenecek: {priceInfo.finalPrice.toLocaleString('tr-TR')} ₺</span>
+                                  </>
+                                )}
+                                {priceInfo.discountRate === 0 && (
+                                  <span style={{ color: 'var(--success)', fontWeight: 700 }}>Ödenecek: {priceInfo.finalPrice.toLocaleString('tr-TR')} ₺</span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
