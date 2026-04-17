@@ -17,10 +17,32 @@ const CustomerQueryModal = ({ onClose }) => {
   const [results, setResults] = useState(null);
   const [searched, setSearched] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!phone.trim() || !name.trim()) return;
-    const found = lookupByPhoneAndName(phone, name);
+    setError('');
+    const trimPhone = phone.trim();
+    const trimName = name.trim();
+    const phoneDigits = trimPhone.replace(/\D/g, '');
+
+    // En az bir bilgi gerekli
+    if (!trimPhone && !trimName) {
+      setError('Lütfen ad-soyad veya telefon numaranızı girin.');
+      return;
+    }
+    // Telefon girildiyse en az 4 rakam olmalı
+    if (trimPhone && phoneDigits.length < 4) {
+      setError('Telefon numarası en az 4 haneli olmalıdır.');
+      return;
+    }
+    // İsim girildiyse en az 2 karakter olmalı
+    if (trimName && trimName.length < 2) {
+      setError('Ad-soyad en az 2 karakter olmalıdır.');
+      return;
+    }
+
+    const found = lookupByPhoneAndName(trimPhone, trimName);
     setResults(found);
     setSearched(true);
   };
@@ -36,7 +58,7 @@ const CustomerQueryModal = ({ onClose }) => {
       <div className="modal-content glass-panel animate-slide-up customer-query-modal">
         <button className="modal-close" onClick={onClose}>✕</button>
         <h2 className="query-title">📞 Randevumu Sorgula</h2>
-        <p className="query-sub">Ad-soyad ve telefon numaranızı girerek randevularınızı sorgulayın.</p>
+        <p className="query-sub">Ad-soyad veya telefon numaranızı girerek randevularınızı sorgulayın.</p>
 
         <form onSubmit={handleSearch} className="query-form">
           <input
@@ -44,18 +66,17 @@ const CustomerQueryModal = ({ onClose }) => {
             className="custom-input"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Ad Soyad"
+            placeholder="Ad Soyad (opsiyonel)"
             autoFocus
-            required
           />
           <input
             type="tel"
             className="custom-input"
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            placeholder="05XX XXX XX XX"
-            required
+            placeholder="05XX XXX XX XX (opsiyonel)"
           />
+          {error && <p style={{ color: 'var(--danger)', fontSize: '0.82rem', margin: '0' }}>{error}</p>}
           <button type="submit" className="query-search-btn">🔍 Sorgula</button>
         </form>
 

@@ -383,7 +383,30 @@
   .main-layout {
     grid-template-columns: 1fr;
   }
+  .sidebar {
+    position: relative;
+    top: auto;
+  }
   .topbar-query-btn span { display: none; }
+  .topbar {
+    padding: 0.5rem 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .topbar-nav {
+    gap: 0.5rem;
+  }
+  .topbar-query-btn {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+  .app-container {
+    padding: 0.75rem;
+  }
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+    gap: 0.5rem;
+  }
 }
 
 

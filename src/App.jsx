@@ -53,8 +53,8 @@ const App = () => {
 
   const isClosed = isClosedDay(selectedDate, settings);
   const availableCount = allSlots.filter(s => s.status === 'available').length;
-  const pendingCount   = allSlots.filter(s => s.status === 'pending').length;
-  const fullCount      = allSlots.filter(s => s.status === 'full').length;
+  const pendingCount = allSlots.filter(s => s.status === 'pending').length;
+  const fullCount = allSlots.filter(s => s.status === 'full').length;
 
   const TR_DAYS = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
   const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -146,36 +146,36 @@ const App = () => {
             <div className="slots-grid">
               {allSlots.map(({ time, status, campaign, campaignRate }) => {
                 const isAvailable = status === 'available';
-                const isPending   = status === 'pending';
-                const isFull      = status === 'full';
-                const isCampaign  = isAvailable && !!campaign;
-                const isHotDeal   = isCampaign && campaignRate >= 50;
+                const isPending = status === 'pending';
+                const isFull = status === 'full';
+                const isCampaign = isAvailable && !!campaign;
+                const isHotDeal = isCampaign && campaignRate >= 50;
                 const isClickable = isAvailable;
                 return (
                   <div
                     key={time}
                     className={[
                       'slot-tile',
-                      isFull     ? 'slot-tile-full'      : '',
-                      isPending  ? 'slot-tile-pending'   : '',
+                      isFull ? 'slot-tile-full' : '',
+                      isPending ? 'slot-tile-pending' : '',
                       isAvailable && !isCampaign ? 'slot-tile-available' : '',
-                      isCampaign && !isHotDeal ? 'slot-tile-campaign'  : '',
-                      isHotDeal  ? 'slot-tile-hot-deal'  : '',
+                      isCampaign && !isHotDeal ? 'slot-tile-campaign' : '',
+                      isHotDeal ? 'slot-tile-hot-deal' : '',
                     ].filter(Boolean).join(' ')}
                     onClick={() => isClickable && setSelectedSlot({ time })}
                     title={
-                      isFull    ? 'Dolu' :
-                      isPending ? 'Onay Bekleniyor' :
-                      isCampaign ? campaign :
-                      'Müsait - Tıkla'
+                      isFull ? 'Dolu' :
+                        isPending ? 'Onay Bekleniyor' :
+                          isCampaign ? campaign :
+                            'Müsait - Tıkla'
                     }
                   >
                     <span className="slot-tile-time">{time}</span>
                     <span className="slot-tile-status">
-                      {isFull    ? 'Dolu'      :
-                       isPending ? 'Bekliyor'  :
-                       isCampaign ? campaign :
-                       'Müsait'}
+                      {isFull ? 'Dolu' :
+                        isPending ? 'Bekliyor' :
+                          isCampaign ? campaign :
+                            'Müsait'}
                     </span>
                     {isHotDeal && <span className="slot-tile-fire">🔥</span>}
                   </div>

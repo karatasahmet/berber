@@ -373,3 +373,66 @@
   color: var(--text-secondary);
   border-left: 3px solid var(--accent-gold);
 }
+
+/* Admin Calendar Toggle Button */
+.admin-calendar-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.admin-calendar-toggle-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Admin Calendar Dropdown */
+.admin-calendar-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 100;
+  min-width: 320px;
+  background: var(--bg-secondary, #1a1a2e);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 175, 55, 0.15);
+  animation: calDropdownIn 0.2s ease-out;
+}
+
+.admin-calendar-dropdown .calendar-picker {
+  position: static;
+  top: auto;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+@keyframes calDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-calendar-dropdown {
+    min-width: 280px;
+    left: -1rem;
+    right: -1rem;
+  }
+}

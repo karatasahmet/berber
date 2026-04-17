@@ -535,9 +535,13 @@ export const getPendingCount = () => getPendingBookings().length;
 export const lookupByPhoneAndName = (phone, customerName) => {
   const all = getAllBookings();
   const results = [];
-  const normalizedPhone = phone.replace(/\D/g, '');
-  const normalizedName = customerName.trim().toLocaleLowerCase('tr-TR');
-  if (!normalizedPhone || normalizedPhone.length < 7 || !normalizedName) return results;
+  const normalizedPhone = phone ? phone.replace(/\D/g, '') : '';
+  const normalizedName = customerName ? customerName.trim().toLocaleLowerCase('tr-TR') : '';
+
+  // En az telefon (4+ hane) veya isim (2+ karakter) gerekli
+  const hasPhone = normalizedPhone.length >= 4;
+  const hasName = normalizedName.length >= 2;
+  if (!hasPhone && !hasName) return results;
 
   Object.entries(all).forEach(([dateStr, dateData]) => {
     const dd = Array.isArray(dateData) ? { default: dateData } : dateData;
@@ -545,11 +549,18 @@ export const lookupByPhoneAndName = (phone, customerName) => {
       if (!Array.isArray(slots)) return;
       slots.forEach(s => {
         const slot = migrateSlot(s);
-        if (slot.phone && slot.customerName
-            && slot.phone.replace(/\D/g, '').includes(normalizedPhone)
-            && slot.customerName.toLocaleLowerCase('tr-TR').includes(normalizedName)
-            && (slot.status === 'pending' || slot.status === 'booked')) {
-          results.push({ ...slot, dateStr, barberId });
+        if ((slot.status !== 'pending' && slot.status !== 'booked') || !slot.customerName) return;
+
+        const phoneMatch = hasPhone && slot.phone && slot.phone.replace(/\D/g, '').includes(normalizedPhone);
+        const nameMatch = hasName && slot.customerName.toLocaleLowerCase('tr-TR').includes(normalizedName);
+
+        // Eğer her iki bilgi de verilmişse, ikisi de eşleşmeli; tek bilgi yeterliyse o yeterli
+        if (hasPhone && hasName) {
+          if (phoneMatch && nameMatch) results.push({ ...slot, dateStr, barberId });
+        } else if (hasPhone) {
+          if (phoneMatch) results.push({ ...slot, dateStr, barberId });
+        } else if (hasName) {
+          if (nameMatch) results.push({ ...slot, dateStr, barberId });
         }
       });
     });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getAdminSlotsForDate, cancelBooking, editBooking, setManualCampaign,
   getActiveCampaigns, getSettings, getPendingBookings, getPendingCount,
@@ -11,6 +11,7 @@ import AdminSettings from './AdminSettings';
 import WeeklyOverview from './WeeklyOverview';
 import MonthlyOverview from './MonthlyOverview';
 import RevenueReport from './RevenueReport';
+import CalendarPicker from './CalendarPicker';
 import Toast from './Common/Toast';
 import './AdminDashboard.css';
 
@@ -32,6 +33,7 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [selectedBarberFilter, setSelectedBarberFilter] = useState('all');
   const [expandedSlots, setExpandedSlots] = useState({}); // track expanded service detail rows
+  const [showCalendar, setShowCalendar] = useState(false); // takvim popup'ı
 
   // Modals
   const [confirmCancelSlot, setConfirmCancelSlot] = useState(null);
@@ -56,6 +58,19 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
   }, [selectedDate, activeTab, selectedBarberFilter]);
 
   useEffect(() => { loadData(); }, [loadData, activeTab]);
+
+  // Takvim dışına tıklanınca kapat
+  const calendarRef = useRef(null);
+  useEffect(() => {
+    if (!showCalendar) return;
+    const handleOutside = (e) => {
+      if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+        setShowCalendar(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [showCalendar]);
 
   // --- STATS CALCULATION ---
   const settings = sysSettings;
@@ -367,10 +382,23 @@ const AdminDashboard = ({ onBackToCustomer, selectedDate, onDateChange }) => {
           <div className="table-responsive glass-panel">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', padding: '0 1rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                <div>
+                <div ref={calendarRef} style={{ position: 'relative' }}>
                   <label style={{ marginRight: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Tarih:</label>
-                  <input type="date" className="custom-input" value={selectedDate}
-                    onChange={e => onDateChange(e.target.value)} style={{ width: 'auto', display: 'inline-block' }} />
+                  <button
+                    className="admin-calendar-toggle-btn"
+                    onClick={() => setShowCalendar(v => !v)}
+                  >
+                    📅 {formatDate(selectedDate)}
+                    <span style={{ marginLeft: '0.5rem', fontSize: '0.7rem' }}>{showCalendar ? '▲' : '▼'}</span>
+                  </button>
+                  {showCalendar && (
+                    <div className="admin-calendar-dropdown" onClick={e => e.stopPropagation()}>
+                      <CalendarPicker
+                        selectedDate={selectedDate}
+                        onDateSelect={(d) => { onDateChange(d); setShowCalendar(false); }}
+                      />
+                    </div>
+                  )}
                 </div>
                 {sysSettings.barbers && sysSettings.barbers.length > 1 && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
